@@ -1,0 +1,21 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Radar Camera Sensor Fusion</title>
+        <meta name="author" content="Ben Elo">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
+    </head>
+    <body>
+        <div id="top-down-view">
+            <p>Top Down View</p>
+            <canvas id="top-down-canvas">
+            </canvas>
+        </div>
+        <div id="right-view">
+             <p>Camera View</p>
+            <canvas id="camera-view-canvas">
+            </canvas>
+        </div>
+        <script src="{{url_for('static', filename='js/main.js')}}"></script>
+    </body>
+</html>

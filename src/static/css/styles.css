@@ -1,0 +1,18 @@
+body {
+    background-color: grey;
+    margin: 0;
+}
+
+#top-down-view {
+    float: left;
+    width: 35vw;
+    height: calc(100vh - 80px);
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+}
+
+#top-down-view>canvas {
+    background-color: white;
+    height: 100%;
+}
