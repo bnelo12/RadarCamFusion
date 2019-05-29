@@ -4,12 +4,12 @@ import numpy as np
 import tensorflow as tf
 import sys
 
-from utils import label_map_util
+from src.utils import label_map_util
 
 MODEL_NAME = 'ssdlite_mobilenet_v2_coco_2018_05_09'
 CWD_PATH = os.getcwd()
-PATH_TO_CKPT = os.path.join(CWD_PATH, 'models', MODEL_NAME, 'frozen_inference_graph.pb')
-PATH_TO_LABELS = os.path.join(CWD_PATH,'data','mscoco_label_map.pbtxt')
+PATH_TO_CKPT = os.path.join(CWD_PATH, 'src', 'models', MODEL_NAME, 'frozen_inference_graph.pb')
+PATH_TO_LABELS = os.path.join(CWD_PATH, 'src', 'data','mscoco_label_map.pbtxt')
 NUM_CLASSES = 90
 
 

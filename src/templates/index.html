@@ -4,6 +4,7 @@
         <title>Radar Camera Sensor Fusion</title>
         <meta name="author" content="Ben Elo">
         <link rel="stylesheet" href="{{url_for('static', filename='css/styles.css')}}">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
     </head>
     <body>
         <div id="top-down-view">
@@ -12,9 +13,12 @@
             </canvas>
         </div>
         <div id="right-view">
-             <p>Camera View</p>
-            <canvas id="camera-view-canvas">
-            </canvas>
+            <p>Camera View</p>
+            <div class="aspect-container">
+                <canvas id="camera-view-canvas">
+                </canvas>
+            </div>
+            <img id='photo'/>
         </div>
         <script src="{{url_for('static', filename='js/main.js')}}"></script>
     </body>
