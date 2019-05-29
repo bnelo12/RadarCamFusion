@@ -19,7 +19,7 @@ body {
 
 #right-view {
     float: right;
-    width: 35vw;
+    width: 45vw;
     height: calc(100vh - 80px);
     display: flex;
     flex-direction: column;

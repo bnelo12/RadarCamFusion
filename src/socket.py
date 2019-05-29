@@ -1,31 +1,21 @@
-from threading import Lock
-from src import socketio
 import io
-import time
-import base64
 
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 
+from src import socketio
 from src.ObjectDetector import ObjectDetector as OD
 
-thread_lock = Lock()
 thread = None
-ready = True
 
 def capture(camera, rawCapture):
     for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         yield frame
 
 def run_object_detection():
-    global ready
     IM_WIDTH = 1280
     IM_HEIGHT = 720
-
-    print("Setting up neural network")
     od = OD()
-    print("Neural network set up complete")
-
     camera = PiCamera()
     camera.rotation = 270
     camera.resolution = (IM_WIDTH,IM_HEIGHT)
@@ -34,14 +24,18 @@ def run_object_detection():
     rawCapture.truncate(0)
     jpg_capture = io.BytesIO()
     camera.capture(jpg_capture, 'jpeg')
-    print('Camera is now recording')
     for frame in capture(camera, rawCapture):
-        ready = False
-        camera.resolution = (160,90)
+        camera.resolution = (320,180)
         camera.capture(jpg_capture, 'jpeg')
         camera.resolution = (IM_WIDTH,IM_HEIGHT)
         boxes, scores, classes, num = od.detect(frame)
-        socketio.emit('image', jpg_capture.getvalue(), broadcast=True)
+        data = {    
+            'image': jpg_capture.getvalue(),
+            'boxes': boxes[0].tolist(),
+            'scores': scores.tolist(),
+            'classes': classes[0].tolist()
+        }
+        socketio.emit('image', data, broadcast=True)
         jpg_capture = io.BytesIO()
         rawCapture.truncate(0)
         socketio.sleep(0)
