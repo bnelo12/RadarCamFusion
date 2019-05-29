@@ -1,11 +1,3 @@
-var socket = io('192.168.0.163:5000')
-
-var camera_canvas = document.getElementById('camera-view-canvas');
-var camera_ctx = camera_canvas.getContext('2d');
-camera_canvas.width = camera_canvas.offsetWidth;
-camera_canvas.height = camera_canvas.offsetHeight;
-
-
 function arrayBufferToImage(arrayBuffer) {
     var blob = new Blob( [ arrayBuffer ], { type: "image/jpeg" } );
     var urlCreator = window.URL || window.webkitURL;
@@ -37,6 +29,68 @@ function drawRect(box, classNo) {
     camera_ctx.fillText(labels[classNo-1], x1*camera_canvas.width+2.5, y1*camera_canvas.height-2.5)
 }
 
+function drawTarget(x, y) {
+    range_ctx.fillStyle = '#41FF00';
+    range_ctx.fillRect(
+        y/8*range_canvas.width - 5,
+        x/4*range_canvas.height + range_canvas.height/2 - 5,
+        10,
+        10
+    );
+}
+
+function drawRadarBackground(max_range=8) {
+    range_ctx.fillStyle = '#000000';
+    range_ctx.fillRect(
+        0,
+        0,
+        range_canvas.width,
+        range_canvas.height
+    );
+    range_ctx.strokeStyle = '#41FF00';
+    for (var i = 0; i < max_range; i++) {
+        range_ctx.beginPath();
+        range_ctx.moveTo(i*range_canvas.width/max_range, 0);
+        range_ctx.lineTo(i*range_canvas.width/max_range, range_canvas.height);
+        range_ctx.stroke();
+    }
+    range_ctx.beginPath();
+    range_ctx.moveTo(0, range_canvas.height/2);
+    range_ctx.lineTo(range_canvas.width, 0);
+    range_ctx.stroke();
+    range_ctx.beginPath();
+    range_ctx.moveTo(0, range_canvas.height/2);
+    range_ctx.lineTo(range_canvas.width, range_canvas.height);
+    range_ctx.stroke();
+}
+
+var socket = io('192.168.0.163:5000')
+
+var camera_canvas = document.getElementById('camera-view-canvas');
+var camera_ctx = camera_canvas.getContext('2d');
+camera_canvas.width = camera_canvas.offsetWidth;
+camera_canvas.height = camera_canvas.offsetHeight;
+
+var range_canvas = document.getElementById('range-view-canvas');
+var range_ctx = range_canvas.getContext('2d');
+range_canvas.width = range_canvas.offsetWidth;
+range_canvas.height = range_canvas.offsetHeight;
+
+camera_ctx.fillStyle = '000000';
+camera_ctx.fillRect(
+    0,
+    0,
+    camera_canvas.width,
+    camera_canvas.height
+);
+camera_ctx.font = "20px Arial";
+camera_ctx.fillStyle = '#FFFFFF';
+camera_ctx.fillText("Waiting for camera...", 
+    camera_canvas.width/2-camera_ctx.measureText("Waiting for camera...").width/2,
+    camera_canvas.height/2);
+
+drawRadarBackground();
+
 socket.on('connect', () => {
     socket.on('image', (data) => {
         var img = arrayBufferToImage(data.image)
@@ -45,6 +99,13 @@ socket.on('connect', () => {
             camera_ctx.drawImage(img, 0, 0, img.width,    img.height,
                 0, 0, camera_canvas.width, camera_canvas.height);
             data.boxes.forEach((box, idx) => drawRect(box, data.classes[idx]));
+        }
+    });
+    socket.on('range_data', ({x, y}) => {
+        drawRadarBackground();
+        for (var i = 0; i < x.length; i++) {
+            drawTarget(x[i], y[i]);
+            console.log(x, y)
         }
     });
 })
