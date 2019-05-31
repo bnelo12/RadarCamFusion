@@ -40,18 +40,26 @@ function drawTarget(x, y) {
         10,
         10
     );
+    range_ctx.fillStyle = '#FFFFFF';
+    range_ctx.fillText(`(${Math.sqrt(x*x+y*y).toPrecision(3)}m)`,
+        y/8*range_canvas.width - 5 + 12,
+        x/4*range_canvas.height/2 + range_canvas.height/2 + 3);
 }
 
 function drawTargetOnCameraView(x, y) {
     if ((x*x + y*y) < 1) return;
     camera_ctx.fillStyle = '#41FF00';
-    x = x/y * camera_matrix[0][0];
+    x_new = x/y * camera_matrix[0][0];
     camera_ctx.fillRect(
-        x - 5 + camera_canvas.width/2,
+        x_new - 5 + camera_canvas.width/2,
         camera_canvas.height/2,
         10,
         10
     );
+    camera_ctx.fillStyle = '#FFFFFF';
+    camera_ctx.fillText(`(${Math.sqrt(x*x+y*y).toPrecision(3)}m)`,
+    x_new - 5 + camera_canvas.width/2 + 12,
+    camera_canvas.height/2 + 7);
 }
 
 function drawRadarBackground(max_range=8) {

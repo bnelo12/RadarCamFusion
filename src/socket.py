@@ -46,7 +46,7 @@ def run_object_detection():
     jpg_capture = io.BytesIO()
     camera.capture(jpg_capture, 'jpeg')
     for frame in capture(camera, rawCapture):
-        camera.resolution = (320,180)
+        camera.resolution = (1280,720)
         camera.capture(jpg_capture, 'jpeg')
         camera.resolution = (IM_WIDTH,IM_HEIGHT)
         boxes, scores, classes, num = od.detect(frame)
