@@ -1,3 +1,5 @@
+var targets = {x: [], y: []};
+
 function arrayBufferToImage(arrayBuffer) {
     var blob = new Blob( [ arrayBuffer ], { type: "image/jpeg" } );
     var urlCreator = window.URL || window.webkitURL;
@@ -30,10 +32,23 @@ function drawRect(box, classNo) {
 }
 
 function drawTarget(x, y) {
+    if ((x*x + y*y) < 1) return;
     range_ctx.fillStyle = '#41FF00';
     range_ctx.fillRect(
         y/8*range_canvas.width - 5,
-        x/4*range_canvas.height + range_canvas.height/2 - 5,
+        x/4*range_canvas.height/2 + range_canvas.height/2 - 5,
+        10,
+        10
+    );
+}
+
+function drawTargetOnCameraView(x, y) {
+    if ((x*x + y*y) < 1) return;
+    camera_ctx.fillStyle = '#41FF00';
+    x = x/y * camera_matrix[0][0];
+    camera_ctx.fillRect(
+        x - 5 + camera_canvas.width/2,
+        camera_canvas.height/2,
         10,
         10
     );
@@ -64,7 +79,7 @@ function drawRadarBackground(max_range=8) {
     range_ctx.stroke();
 }
 
-var socket = io('192.168.0.163:5000')
+var socket = io(window.location.hostname + ":" + window.location.port);
 
 var camera_canvas = document.getElementById('camera-view-canvas');
 var camera_ctx = camera_canvas.getContext('2d');
@@ -99,13 +114,16 @@ socket.on('connect', () => {
             camera_ctx.drawImage(img, 0, 0, img.width,    img.height,
                 0, 0, camera_canvas.width, camera_canvas.height);
             data.boxes.forEach((box, idx) => drawRect(box, data.classes[idx]));
+            targets.x.forEach((x, idx) => {
+                drawTargetOnCameraView(x, targets.y[idx]);
+            });
         }
     });
     socket.on('range_data', ({x, y}) => {
         drawRadarBackground();
         for (var i = 0; i < x.length; i++) {
             drawTarget(x[i], y[i]);
-            console.log(x, y)
+            targets = {x, y}
         }
     });
 })
@@ -254,4 +272,14 @@ var labels = [
     "",
     "",
     ""
+]
+
+var camera_matrix = [
+    [577.5357356, 0, 308.39515587],
+    [0, 580.13704064, 250.15527515],
+    [0, 0, 1]
+]
+
+var distortion_vector = [
+    0.08108322, -0.35909212, 0.00284916, -0.00358919, 0.1448473
 ]

@@ -8,8 +8,8 @@
     </head>
     <body>
         <div id="top-down-view">
-            <p>Top Down View</p>
-            <canvas id="top-down-canvas">
+            <p>Radar Range Data</p>
+            <canvas id="range-view-canvas">
             </canvas>
         </div>
         <div id="right-view">
@@ -18,9 +18,9 @@
                 <canvas id="camera-view-canvas">
                 </canvas>
             </div>
-            <p>Radar Range Data</p>
-                <canvas id="range-view-canvas">
-                </canvas>
+            <h2>Radar Camera Sensor Fusion Demo</h2>
+            <p>Here we use two sensors, a digital camera and a radar system to find and detect people in a scene and provide their range information. The camera uses a pre trained SDD model to find and detect objects. We then use peak detection to identify objects from the radar system and apply a perspective tranformation to the radar data to map the data points onto the camera images.</p>
+            <p>If the range data point lands in the bounding box of a person, then that point is assigned to that person. Thus we can develop a 3d view of where people are in a given scene through the fusion of these two sensors.</p>
         </div>
         <script src="{{url_for('static', filename='js/main.js')}}"></script>
     </body>
